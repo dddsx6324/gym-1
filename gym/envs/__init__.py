@@ -374,6 +374,14 @@ for reward_type in ['sparse', 'dense']:
         max_episode_steps=50,
     )
 
+    # Husky
+    register(
+        id='HuskyPickAndPlace{}-v1'.format(suffix),
+        entry_point='gym.envs.robotics:HuskyPickAndPlaceEnv',
+        kwargs=kwargs,
+        max_episode_steps=100,
+    )
+
     # Hand
     register(
         id='HandReach{}-v0'.format(suffix),
