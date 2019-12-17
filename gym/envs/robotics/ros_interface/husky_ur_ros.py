@@ -20,7 +20,7 @@ import rostopic
 
 import rosmsg, rosservice
 from std_msgs.msg import Float64
-from geometry_msgs.msg import Twist, Pose
+from geometry_msgs.msg import Twist, Pose, PoseStamped
 from sensor_msgs.msg import JointState
 from nav_msgs.msg import Odometry
 
@@ -59,7 +59,7 @@ class HuskyUR5ROS(object):
 
         ####### Base Husky
         # Topics
-        self.rostopic_base_cmd = '/husky_velocity_controller/cmd_vel' # 
+        self.rostopic_base_cmd = '/joy_teleop/cmd_vel' # '/husky_velocity_controller/cmd_vel' 
         self.rostopic_base_odometry = '/odometry/filtered' # nav_msgs/Odometry
         self.rostopic_base_estop = '/estop' # std_msgs/Bool
 
@@ -132,13 +132,14 @@ class HuskyUR5ROS(object):
         ####### Camera RGBD
 
         ####### Target
-        self.target_pose = rospy.Subscriber('/object_target', Pose)
+        self.target_position = [0,0,0]
+        rospy.Subscriber('/transformPose', PoseStamped, self.object_callback)
 
 
         ####### Initialization
         self.check_all_systems_ready()
 
-        rospy.sleep(2)
+        rospy.sleep(5)
         print("Husky UR5 ROS Interface Initialize Successfully!")
 
     # Initialization
@@ -147,14 +148,14 @@ class HuskyUR5ROS(object):
         while joints is None and not rospy.is_shutdown():
             try:
                 joints = rospy.wait_for_message(self.rostopic_arm_joint_states, JointState, timeout=1.0)
-                rospy.logwarn("Current " + str(self.rostopic_arm_joint_states) + "READY=>" + str(joints))
+                rospy.logwarn("Current " + str(self.rostopic_arm_joint_states) + "READY => " + str(joints))
             except:
                 rospy.logerr("Current " + str(self.rostopic_arm_joint_states) + " not ready yet, retrying...")
         
         if self.use_arm == 'left':
             self.gripper_reset('left')
             self.gripper_activate('left')
-        if self.use_arm == 'right':
+        elif self.use_arm == 'right':
             self.gripper_reset('right')
             self.gripper_activate('right')
 
@@ -354,6 +355,19 @@ class HuskyUR5ROS(object):
     def camera_get_rgb(self):
 
         return NotImplementedError
+
+    def get_object_position(self):
+        if self.target_position[2] > 0:
+            return self.target_position
+        else:
+            rospy.logerr("No Object Position, Please check the Object")
+            return NotImplementedError
+
+    def object_callback(self, msg):
+        self.target_position[0] = msg.pose.position.x
+        self.target_position[1] = msg.pose.position.y
+        self.target_position[2] = msg.pose.position.z
+        # print("Received Object Position: x:{}, y:{}, z:{}".format(self.target_position[0],self.target_position[1],self.target_position[2]))
 
     ### Gripper Robotiq 3finger
     def gripper_gen_cmd(self, char, command):

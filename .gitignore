@@ -39,3 +39,5 @@ tutorial/*.html
 vizdoom.ini
 
 /gym-env
+/plot
+.vscode/

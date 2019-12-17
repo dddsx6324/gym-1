@@ -20,5 +20,5 @@ class HuskyPickAndPlaceEnv(mobile_dual_ur5_husky_gym_env.MobileDualUR5HuskyGymEn
             gripper_extra_height=0.2, target_in_the_air=True, target_offset=0.0,
             obj_range=0.1, target_range=0.1, distance_threshold=0.05,
             initial_qpos=initial_qpos, reward_type=reward_type, n_actions=6,
-            use_real_robot=False, debug_print=False, use_arm="left")
+            use_real_robot=False, debug_print=True, use_arm="right", object_type="cube")
         utils.EzPickle.__init__(self)

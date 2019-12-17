@@ -18,7 +18,7 @@ class MobileDualUR5HuskyGymEnv(robot_gym_env.RobotGymEnv):
         self, model_path, n_substeps, gripper_extra_height, block_gripper,
         has_object, target_in_the_air, target_offset, obj_range, target_range,
         distance_threshold, initial_qpos, reward_type, n_actions,
-        use_real_robot, debug_print, use_arm
+        use_real_robot, debug_print, use_arm, object_type,
     ):
         """Initializes a new Dual_UR5_Husky environment.
         Args:
@@ -46,6 +46,7 @@ class MobileDualUR5HuskyGymEnv(robot_gym_env.RobotGymEnv):
         self.distance_threshold = distance_threshold
         self.reward_type = reward_type
         self.n_actions = n_actions
+        self.object_type = object_type
 
         self.arm_dof = 3
         self.gripper_dof = 1
@@ -85,6 +86,27 @@ class MobileDualUR5HuskyGymEnv(robot_gym_env.RobotGymEnv):
 
         self._is_success = 0
 
+        self.current_object_pos = [0,0,0]
+        self.current_grip_pos = [0,0,0]
+
+        # shpere 0.361, milk 0.4372, bottle 0.6482, can 0.3838, cylinder 0.371, cube 0.35098
+        self.object_height = 0
+        if self.object_type == 'cube':
+            self.object_height = 0.37
+        elif self.object_type == 'can':
+            self.object_height = 0.40
+        elif self.object_type == 'shpere':
+            object_height = 0.375
+        elif self.object_type == 'milk':
+            self.object_height = 0.45
+        elif self.object_type == 'bottle':
+            self.object_height = 0.66
+        elif self.object_type == 'cylinder':
+            self.object_height = 0.39
+        else:
+            print("Got a wrong object type")
+            return 0
+
         # rospy.init_node("gym")
         self._use_real_robot = use_real_robot
         if self._use_real_robot:
@@ -114,13 +136,17 @@ class MobileDualUR5HuskyGymEnv(robot_gym_env.RobotGymEnv):
         """
         Simple reward function: reach and pick
         """
-        # object_pos_1 = self.sim.data.get_site_xpos('object1')
-        object_pos = self.sim.data.get_site_xpos('object0')
-        if self.debug_print:
-            print("self.sim.data.get_site_xpos('object0'): ", object_pos)
-        grip_pos = self.sim.data.get_site_xpos('r_grip_site')
-        if self.debug_print:
-            print("self.sim.data.get_site_xpos('r_grip_pos'): ", grip_pos)
+        if self._use_real_robot:
+            object_pos = self.current_object_pos
+            grip_pos = self.current_grip_pos
+        else:
+            # object_pos_1 = self.sim.data.get_site_xpos('object1')
+            object_pos = self.sim.data.get_site_xpos('object0')
+            if self.debug_print:
+                print("self.sim.data.get_site_xpos('object0'): ", object_pos)
+            grip_pos = self.sim.data.get_site_xpos('r_grip_site')
+            if self.debug_print:
+                print("self.sim.data.get_site_xpos('r_grip_pos'): ", grip_pos)
 
         grip_obj_pos = object_pos - grip_pos
         obj_target_pos = goal - object_pos
@@ -153,10 +179,10 @@ class MobileDualUR5HuskyGymEnv(robot_gym_env.RobotGymEnv):
                 # reward_grasping += 1.0
                 self.gripper_close = True
                 # stage 1: approaching and grasping/lifting
-                if object_pos[2] > 0.37: # table hight + object hight + lift distance
+                if object_pos[2] > self.object_height: # table hight + object hight + lift distance
                     # grasping success
                     reward_grasping += 10.0
-                    if object_pos[2] > 0.5:
+                    if object_pos[2] > (self.object_height + 0.15):
                         reward_grasping += 100.0
                         self._is_success = 1
                         # if object_pos[2] > 0.5:
@@ -263,7 +289,8 @@ class MobileDualUR5HuskyGymEnv(robot_gym_env.RobotGymEnv):
             pos_ctrl, base_ctrl, gripper_ctrl = action[:3], action[3:-1], action[-1]
 
             pos_ctrl *= 0.05  # limit maximum change in position
-            base_ctrl *= 0.01
+            base_ctrl *= 0.5
+            base_ctrl[1] = 0
 
             rot_ctrl = [0, 0.707, 0.707, 0] # fixed rotation of the end effector, expressed as a quaternion
 
@@ -286,6 +313,7 @@ class MobileDualUR5HuskyGymEnv(robot_gym_env.RobotGymEnv):
             #               ee_pose.pose.orientation.z]
             arm_action = pos_ctrl
             print("arm_action: ", arm_action)
+            print("base_action: ", base_ctrl)
 
             # Applay action to real robot
             # self.husky_ur5_robot.arm_set_ee_pose_relative(pos_ctrl)
@@ -373,9 +401,13 @@ class MobileDualUR5HuskyGymEnv(robot_gym_env.RobotGymEnv):
                                   ee_pose.pose.orientation.y,
                                   ee_pose.pose.orientation.z,]
 
-            grip_pos = ee_position
-            object_pos = np.array([0.2, 0.2, 0.2])
-            object_rel_pos = np.array([0.1, 0.1, 0.1])
+            grip_pos = np.array(ee_position)
+            # object_pos = np.array([0.2, 0.2, 0.2])
+            object_pos = np.array(self.husky_ur5_robot.get_object_position())
+            self.current_grip_pos = grip_pos
+            self.current_object_pos = object_pos
+            
+            object_rel_pos = object_pos - grip_pos
             ur5_qpos = np.array(joint_angles)
             ur5_qvel = np.array(joint_velocity)
             if self.debug_print:
@@ -384,6 +416,7 @@ class MobileDualUR5HuskyGymEnv(robot_gym_env.RobotGymEnv):
                 print("object_rel_pos: ", object_rel_pos)
                 print("ur5_qpos: ", ur5_qpos)
                 print("ur5_qvel: ", ur5_qvel)
+                print("is_success: ", self._is_success)
             obs = np.concatenate([
                 grip_pos,
                 object_pos,

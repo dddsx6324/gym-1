@@ -44,37 +44,16 @@ def on_episode_step(info):
 
 def on_episode_end(info):
     episode = info["episode"]
-    successes = np.mean(episode.user_data["is_success"])
-    episode.custom_metrics["success_mean"] = successes
-    num = len(episode.user_data["is_success"])
-    print("successes: ", successes)
-    print("num of episode: ", num)
+    successes = np.sum(episode.user_data["is_success"])
+    # episode.custom_metrics["success_mean"] = successes
+    # num = len(episode.user_data["is_success"])
+    # print("successes: ", successes)
+    # print("num of episode: ", num)
     if successes > 0:
         episode.custom_metrics["success_rate"] = 1.
     else:
         episode.custom_metrics["success_rate"] = 0.
     print("episode {} ended with length {} and success {}".format(episode.episode_id, episode.length, successes))
-    
-
-def on_sample_end(info):
-    print("returned sample batch of size {}".format(info["samples"].count))
-
-
-def on_train_result(info):
-    print("trainer.train() result: {} -> {} episodes".format(
-        info["trainer"], info["result"]["episodes_this_iter"]))
-    # you can mutate the result dict to add new fields to return
-    info["result"]["callback_ok"] = True
-
-
-def on_postprocess_traj(info):
-    episode = info["episode"]
-    batch = info["post_batch"]
-    print("postprocessed {} steps".format(batch.count))
-    if "num_batches" not in episode.custom_metrics:
-        episode.custom_metrics["num_batches"] = 0
-    episode.custom_metrics["num_batches"] += 1
-
 
 
 def create_parser(parser_creator=None):
@@ -180,27 +159,28 @@ def run(args, parser):
         # Note: keep this in sync with tune/config_parser.py
         experiments = {
             args.experiment_name: {  # i.e. log to ~/ray_results/default
-                "run": "PPO", # args.run,
+                "run": args.run,
                 "env": "HuskyPickAndPlace-v1",
-                "checkpoint_freq": 20, # args.checkpoint_freq,
+                "checkpoint_freq": 100, # args.checkpoint_freq,
                 "keep_checkpoints_num": args.keep_checkpoints_num,
                 "checkpoint_score_attr": args.checkpoint_score_attr,
                 "local_dir": args.local_dir,
                 "resources_per_trial": (
                     args.resources_per_trial and
                     resources_to_json(args.resources_per_trial)),
-                "stop": args.stop,
+                # "stop": args.stop,
+                "stop": {"timesteps_total": 10000000}, # 10M "episode_reward_mean": 18.0
                 # "config": {dict(args.config, env=args.env)},
-                    "config": {"num_workers":5,
+                "config": {
+                    "num_workers": 10, 
+                    "ignore_worker_failures": True,
+                    # "seed": 789,
                     "callbacks": {
-                    "on_episode_start": on_episode_start,
-                    "on_episode_step": on_episode_step,
-                    "on_episode_end": on_episode_end,
-                    # "on_sample_end": on_sample_end,
-                    # "on_train_result": on_train_result,
-                    # "on_postprocess_traj": on_postprocess_traj,
+                        "on_episode_start": on_episode_start,
+                        "on_episode_step": on_episode_step,
+                        "on_episode_end": on_episode_end,
+                    },
                 },
-            },
                 "restore": args.restore,
                 "num_samples": args.num_samples,
                 "upload_dir": args.upload_dir,
@@ -257,42 +237,3 @@ if __name__ == "__main__":
     parser = create_parser()
     args = parser.parse_args()
     run(args, parser)
-
-
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("--num-iters", type=int, default=2000)
-#     args = parser.parse_args()
-
-#     ray.init()
-#     trials = tune.run(
-#         "PPO",
-#         stop={
-#             "training_iteration": args.num_iters,
-#         },
-#         config={
-#             "env": "HuskyPickAndPlace-v1",
-#             "num_gpus": 0,
-#             "num_workers": 30,
-#             # "lr": tune.grid_search([0.01, 0.001, 0.0001]),
-#             "eager": False,
-#             # "checkpoint": 20,
-#             "callbacks": {
-#                 "on_episode_start": on_episode_start,
-#                 "on_episode_step": on_episode_step,
-#                 "on_episode_end": on_episode_end,
-#                 # "on_sample_end": on_sample_end,
-#                 # "on_train_result": on_train_result,
-#                 # "on_postprocess_traj": on_postprocess_traj,
-#             },
-#         },
-#         return_trials=True)
-
-#     # verify custom metrics for integration tests
-#     custom_metrics = trials[0].last_result["custom_metrics"]
-#     print(custom_metrics)
-#     # assert "pole_angle_mean" in custom_metrics
-#     # assert "pole_angle_min" in custom_metrics
-#     # assert "pole_angle_max" in custom_metrics
-#     # assert "num_batches_mean" in custom_metrics
-#     # assert "callback_ok" in trials[0].last_result

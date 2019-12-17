@@ -60,7 +60,7 @@ def test_gripper():
 
 
 def test_base():
-    base_cmd = [0.5, 0.5]
+    base_cmd = [0.1, 0.]
     husky_ur_ros.base_velocity_cmd(base_cmd)
 
 
@@ -70,6 +70,6 @@ def test_camera():
 
 
 if __name__ == "__main__":
-    test_arm()
+    # test_arm()
     # test_gripper()
-    # test_base()
+    test_base()

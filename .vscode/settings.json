@@ -2,5 +2,7 @@
     "python.autoComplete.extraPaths": [
         "/home/cong/ros_ws/openai_ros_ws/devel/lib/python3/dist-packages",
         "/opt/ros/kinetic/lib/python2.7/dist-packages"
-    ]
+    ],
+    "python.pythonPath": "gym-env/bin/python3.5",
+    "ros.distro": "kinetic"
 }
