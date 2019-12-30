@@ -46,9 +46,9 @@
 		<!-- Object -->
 		<include file="objects.xml" />
 
-		<body pos="0.9 -0.6 0.15" name="table0">
-			<geom size="0.25 0.3 0.15" type="box" mass="2000" material="table_mat"></geom>
-			<geom size="0.25 0.3 0.15" type="box" mass="2000" group="1" material="table_mat"></geom>
+		<body pos="0.9 -0.6 0.2" name="table0">
+			<geom size="0.25 0.3 0.2" type="box" mass="2000" material="table_mat"></geom>
+			<geom size="0.25 0.3 0.2" type="box" mass="2000" group="1" material="table_mat"></geom>
 		</body>
 		
 	</worldbody>

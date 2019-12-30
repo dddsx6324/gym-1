@@ -169,7 +169,7 @@ def run(args, parser):
                     args.resources_per_trial and
                     resources_to_json(args.resources_per_trial)),
                 # "stop": args.stop,
-                "stop": {"timesteps_total": 10000000}, # 10M "episode_reward_mean": 18.0
+                "stop": {"timesteps_total": 4000000}, # 10M "episode_reward_mean": 18.0
                 # "config": {dict(args.config, env=args.env)},
                 "config": {
                     "num_workers": 10, 
