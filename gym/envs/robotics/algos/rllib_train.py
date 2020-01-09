@@ -161,7 +161,7 @@ def run(args, parser):
             args.experiment_name: {  # i.e. log to ~/ray_results/default
                 "run": args.run,
                 "env": "HuskyPickAndPlace-v1",
-                "checkpoint_freq": 100, # args.checkpoint_freq,
+                "checkpoint_freq": 50, # args.checkpoint_freq,
                 "keep_checkpoints_num": args.keep_checkpoints_num,
                 "checkpoint_score_attr": args.checkpoint_score_attr,
                 "local_dir": args.local_dir,
@@ -169,7 +169,7 @@ def run(args, parser):
                     args.resources_per_trial and
                     resources_to_json(args.resources_per_trial)),
                 # "stop": args.stop,
-                "stop": {"timesteps_total": 4000000}, # 10M "episode_reward_mean": 18.0
+                "stop": {"timesteps_total": 10000000}, # 10M "episode_reward_mean": 18.0
                 # "config": {dict(args.config, env=args.env)},
                 "config": {
                     "num_workers": 10, 

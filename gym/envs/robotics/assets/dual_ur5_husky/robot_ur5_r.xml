@@ -1,5 +1,5 @@
 <mujoco>
-
+    
     <body name="r_ur5_arm_shoulder_link" pos="0.12505 -0.21302 0.42307" quat="0 0 0.3826834 -0.9238795" childclass="ur5:blue">
     <!-- <body name="r_ur5_arm_shoulder_link" pos="0.12505 -0.21302 0.42307" quat="0.653595 0.27036 0.270576 -0.653075"> -->
         <inertial pos="0 0 0" mass="3.7" diaginertia="0.0102675 0.0102675 0.00666" />

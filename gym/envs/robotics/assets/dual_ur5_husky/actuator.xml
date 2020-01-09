@@ -15,6 +15,14 @@
         <position name='wrist_2' ctrllimited="true" ctrlrange="-3.14159 3.14159" joint='wrist_2_joint' kp="100"/>
         <position name='wrist_3' ctrllimited="true" ctrlrange="-3.14159 3.14159" joint='wrist_3_joint' kp="100"/> -->
 
+        <!-- right ur5 arm control -->
+        <!-- <position name="r_joint1" ctrllimited="true" ctrlrange="-3.14159 3.14159" joint="r_ur5_arm_shoulder_pan_joint" kp="100"/>
+        <position name="r_joint2" ctrllimited="true" ctrlrange="-3.14159 3.14159" joint="r_ur5_arm_shoulder_lift_joint" kp="100"/>
+        <position name="r_joint3" ctrllimited="true" ctrlrange="-3.14159 3.14159" joint="r_ur5_arm_elbow_joint" kp="100"/>
+        <position name="r_joint4" ctrllimited="true" ctrlrange="-3.14159 3.14159" joint="r_ur5_arm_wrist_1_joint" kp="100"/>
+        <position name="r_joint5" ctrllimited="true" ctrlrange="-3.14159 3.14159" joint="r_ur5_arm_wrist_2_joint" kp="100"/>
+        <position name="r_joint6" ctrllimited="true" ctrlrange="-3.14159 3.14159" joint="r_ur5_arm_wrist_3_joint" kp="100"/> -->
+
         <!-- force control mode -->
         <!-- <motor name='shoulder_pan_T' ctrllimited="true" ctrlrange="-2 2" joint='shoulder_pan_joint' gear="101"/> range -150 150 -->
         <!-- <motor name='shoulder_lift_T' ctrllimited="true" ctrlrange="-2 2" joint='shoulder_lift_joint' gear="101"/> -->
@@ -54,7 +62,7 @@
 
         <!-- right gripper control -->
         <!-- https://github.com/StanfordVL/robosuite/blob/7b727b075607466662ba8fac8bf8634936bdc58d/robosuite/models/assets/grippers/robotiq_gripper_s.xml#L11 -->
-        <position ctrllimited="true" ctrlrange="-0.16 0.25" joint="r_palm_finger_1_joint" kp="20" name="r_gripper_palm_finger_1_joint" forcelimited="true" forcerange="-500 500"/>
+        <!-- <position ctrllimited="true" ctrlrange="-0.16 0.25" joint="r_palm_finger_1_joint" kp="20" name="r_gripper_palm_finger_1_joint" forcelimited="true" forcerange="-500 500"/>
         <position ctrllimited="true" ctrlrange="0 3.1416" joint="r_finger_1_joint_1" kp="2" name="r_gripper_finger_1_joint_1" forcelimited="true" forcerange="-20 20"/>
         <position ctrllimited="true" ctrlrange="0 3.1416" joint="r_finger_1_joint_2" kp="2" name="r_gripper_finger_1_joint_2" forcelimited="true" forcerange="-20 20"/>
         <position ctrllimited="true" ctrlrange="0 3.1416" joint="r_finger_1_joint_3" kp="2" name="r_gripper_finger_1_joint_3" forcelimited="true" forcerange="-20 20"/>
@@ -64,7 +72,7 @@
         <position ctrllimited="true" ctrlrange="0 3.1416" joint="r_finger_2_joint_3" kp="2" name="r_gripper_finger_2_joint_3" forcelimited="true" forcerange="-20 20"/>
         <position ctrllimited="true" ctrlrange="0 3.1416" joint="r_finger_middle_joint_1" kp="2" name="r_gripper_finger_middle_joint_1" forcelimited="true" forcerange="-20 20"/>
         <position ctrllimited="true" ctrlrange="0 3.1416" joint="r_finger_middle_joint_2" kp="2" name="r_gripper_finger_middle_joint_2" forcelimited="true" forcerange="-20 20"/>
-        <position ctrllimited="true" ctrlrange="0 3.1416" joint="r_finger_middle_joint_3" kp="2" name="r_gripper_finger_middle_joint_3" forcelimited="true" forcerange="-20 20"/>
+        <position ctrllimited="true" ctrlrange="0 3.1416" joint="r_finger_middle_joint_3" kp="2" name="r_gripper_finger_middle_joint_3" forcelimited="true" forcerange="-20 20"/> -->
 
         <!-- camera pan tile control -->
 

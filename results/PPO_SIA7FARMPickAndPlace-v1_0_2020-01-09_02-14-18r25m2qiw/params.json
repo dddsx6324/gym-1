@@ -1,0 +1,4 @@
+{
+  "env": "SIA7FARMPickAndPlace-v1",
+  "num_workers": 25
+}

@@ -16,8 +16,8 @@
     <body name="robot0:base_link" pos="0 0 0.061875" childclass="dual_ur5_husky">
     <!-- <body name="robot0:base_link" pos="0 0 0.061875"> -->
         <!-- <geom mesh="base_link" name="robot0:base_link" material="robot0:base_mat" class="robot0:grey"></geom> -->
-        <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="base_link" />
-        <geom size="0.4937 0.28545 0.061875" type="box" />
+        <geom name="base_link_visual" type="mesh" contype="0" conaffinity="0" group="1" mesh="base_link" />
+        <geom name="base_link_collision" size="0.4937 0.28545 0.061875" type="box" />
         <!-- <geom size="0.4937 0.28545 0.061875" pos="0 0 0.061875" type="box" /> -->
 
 		<joint armature="0.0001" axis="1 0 0" damping="1e+11" name="robot0:slide0" pos="0 0 0" type="slide"></joint>
